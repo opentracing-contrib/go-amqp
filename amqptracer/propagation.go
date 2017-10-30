@@ -1,17 +1,17 @@
-package amqptracing
+package amqptracer
 
 // amqpHeadersCarrier satisfies both TextMapWriter and TextMapReader.
 //
 // Example usage for server side:
 //
-//     carrier := amqptracing.amqpHeadersCarrier(amqp.Table)
+//     carrier := amqptracer.amqpHeadersCarrier(amqp.Table)
 //     clientContext, err := tracer.Extract(
 //         opentracing.TextMap,
 //         carrier)
 //
 // Example usage for client side:
 //
-//     carrier := amqptracing.amqpHeadersCarrier(amqp.Table)
+//     carrier := amqptracer.amqpHeadersCarrier(amqp.Table)
 //     err := tracer.Inject(
 //         span.Context(),
 //         opentracing.TextMap,

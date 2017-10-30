@@ -1,4 +1,4 @@
-package amqptracing
+package amqptracer
 
 import (
 	"strconv"
@@ -7,16 +7,17 @@ import (
 	opentracing "github.com/opentracing/opentracing-go"
 )
 
-func TestInject(t *testing.T) {
+func TestAMQPHeaderInject(t *testing.T) {
 	h := map[string]interface{}{}
 	h["NotOT"] = "blah"
 	h["opname"] = "AlsoNotOT"
 	tracer := testTracer{}
-	sp := tracer.StartSpan("someSpan")
-	fakeID := sp.Context().(testSpanContext).FakeID
+	span := tracer.StartSpan("someSpan")
+	fakeID := span.Context().(testSpanContext).FakeID
 
-	// Inject the tracing context to the AMQP header.
-	if err := Inject(sp, h); err != nil {
+	// Use amqpHeadersCarrier to wrap around `h`.
+	carrier := amqpHeadersCarrier(h)
+	if err := span.Tracer().Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
 		t.Fatal(err)
 	}
 
@@ -30,21 +31,21 @@ func TestInject(t *testing.T) {
 	}
 }
 
-func TestExtract(t *testing.T) {
+func TestAMQPHeaderExtract(t *testing.T) {
 	h := map[string]interface{}{}
 	h["NotOT"] = "blah"
 	h["opname"] = "AlsoNotOT"
 	h["testprefix-fakeid"] = "42"
+	tracer := testTracer{}
 
-	// Set the testTracer as the global tracer.
-	opentracing.SetGlobalTracer(testTracer{})
-
-	// Extract the tracing span out from the AMQP header.
-	ctx, err := Extract(h)
+	// Use amqpHeadersCarrier to wrap around `h`.
+	carrier := amqpHeadersCarrier(h)
+	spanContext, err := tracer.Extract(opentracing.TextMap, carrier)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if ctx.(testSpanContext).FakeID != 42 {
+
+	if spanContext.(testSpanContext).FakeID != 42 {
 		t.Errorf("Failed to read testprefix-fakeid correctly")
 	}
 }

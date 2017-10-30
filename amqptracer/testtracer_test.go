@@ -1,4 +1,4 @@
-package amqptracing
+package amqptracer
 
 import (
 	"strconv"

@@ -1,4 +1,4 @@
-package amqptracing
+package amqptracer
 
 import (
 	opentracing "github.com/opentracing/opentracing-go"
