@@ -5,6 +5,19 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// Example usage for server side:
+//
+//     clientContext, err := amqptracer.Extract(amqp.Table); err != nil {
+//         span = opentracing.StartSpan("opName", opentracing.ChildOf(clientContext))
+//     } else {
+//         span = opentracing.StartSpan("opName")
+//     }
+//
+// Example usage for client side:
+//
+//     err := amqptracer.Inject(opentracing.Span, amqp.Table)
+//
+
 // Inject injects the span context into the AMQP header.
 func Inject(span opentracing.Span, hdrs amqp.Table) error {
 	c := amqpHeadersCarrier(hdrs)
