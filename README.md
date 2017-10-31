@@ -1,6 +1,6 @@
 # go-amqp
 
-[![Build Status]](https://travis-ci.org/keinohguchi/go-amqp-opentracing)
+[![Build Status]](https://travis-ci.org/opentracing-contrib/go-amqp)
 
 [AMQP] instrumentation in Go
 
