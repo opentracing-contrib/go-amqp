@@ -7,7 +7,8 @@ import (
 
 // Example usage for server side:
 //
-//     clientContext, err := amqptracer.Extract(amqp.Table); err != nil {
+//     clientContext, err := amqptracer.Extract(amqp.Table)
+//     if err != nil {
 //         span = opentracing.StartSpan("opName", opentracing.ChildOf(clientContext))
 //     } else {
 //         span = opentracing.StartSpan("opName")
