@@ -4,14 +4,14 @@ package amqptracer
 //
 // Example usage for server side:
 //
-//     carrier := amqptracer.amqpHeadersCarrier(amqp.Table)
+//     carrier := amqpHeadersCarrier(amqp.Table)
 //     clientContext, err := tracer.Extract(
 //         opentracing.TextMap,
 //         carrier)
 //
 // Example usage for client side:
 //
-//     carrier := amqptracer.amqpHeadersCarrier(amqp.Table)
+//     carrier := amqpHeadersCarrier(amqp.Table)
 //     err := tracer.Inject(
 //         span.Context(),
 //         opentracing.TextMap,
