@@ -48,3 +48,19 @@ func TestExtract(t *testing.T) {
 		t.Errorf("Failed to read testprefix-fakeid correctly")
 	}
 }
+
+func TestExtractWithTracer(t *testing.T) {
+	h := map[string]interface{}{}
+	h["NotOT"] = "blah"
+	h["opname"] = "AlsoNotOT"
+	h["testprefix-fakeid"] = "42"
+
+	// Extract the tracing span out from the AMQP header
+	ctx, err := ExtractWithTracer(h, testTracer{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ctx.(testSpanContext).FakeID != 42 {
+		t.Errorf("Failed to read testprefix-fakeid correctly")
+	}
+}

@@ -1,6 +1,7 @@
 package amqptracer
 
 import (
+	"errors"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/streadway/amqp"
 )
@@ -54,4 +55,31 @@ func Inject(span opentracing.Span, hdrs amqp.Table) error {
 func Extract(hdrs amqp.Table) (opentracing.SpanContext, error) {
 	c := amqpHeadersCarrier(hdrs)
 	return opentracing.GlobalTracer().Extract(opentracing.TextMap, c)
+}
+
+// Extract extracts the span context out of the AMQP header.
+//
+// Example:
+//
+//	func ConsumeMessage(ctx context.Context, msg *amqp.Delivery) error {
+//		// Extract the span context out of the AMQP header.
+//		spCtx, _ := amqptracer.ExtractWithTracer(msg.Headers, tracer)
+//		sp := opentracing.StartSpan(
+//			"ConsumeMessage",
+//			opentracing.FollowsFrom(spCtx),
+//		)
+//		defer sp.Finish()
+//
+//		// Update the context with the span for the subsequent reference.
+//		ctx = opentracing.ContextWithSpan(ctx, sp)
+//
+//		// Actual message processing.
+//		return ProcessMessage(ctx, msg)
+//	}
+func ExtractWithTracer(hdrs amqp.Table, tracer opentracing.Tracer) (opentracing.SpanContext, error) {
+	if tracer == nil {
+		return nil, errors.New("tracer is nil")
+	}
+	c := amqpHeadersCarrier(hdrs)
+	return tracer.Extract(opentracing.TextMap, c)
 }
