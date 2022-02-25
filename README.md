@@ -17,6 +17,8 @@ following caveats:
 
 - **github.com/streadway/amqp**: Client and server instrumentation. *Only supported
   with Go 1.7 and later.*
+- **github.com/rabbitmq/amqp091-go**: Client and server instrumentation. *Only supported
+  with Go 1.7 and later.*
 
 ## Required Reading
 
@@ -76,7 +78,7 @@ between the producers and the consumers.
 [OpenTracing project]: http://opentracing.io
 [terminology]: http://opentracing.io/documentation/pages/spec.html
 [OpenTracing API for Go]: https://github.com/opentracing/opentracing-go
-[AMQP]: https://github.com/streadway/amqp
+[AMQP]: https://github.com/rabbitmq/amqp091-go
 [Build Status]: https://travis-ci.org/opentracing-contrib/go-amqp.svg
 [GoDoc]: https://godoc.org/github.com/opentracing-contrib/go-amqp/amqptracer?status.svg
 [check godoc]: https://godoc.org/github.com/opentracing-contrib/go-amqp/amqptracer
