@@ -1,6 +1,8 @@
 # go-amqp
 
-[![Build Status]](https://travis-ci.org/opentracing-contrib/go-amqp)
+[![CI](https://github.com/opentracing-contrib/go-amqp/actions/workflows/ci.yml/badge.svg)](https://github.com/opentracing-contrib/go-amqp/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/opentracing-contrib/go-amqp)](https://goreportcard.com/report/github.com/opentracing-contrib/go-amqp)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/opentracing-contrib/go-amqp)
 [![GoDoc]](http://godoc.org/github.com/opentracing-contrib/go-amqp/amqptracer)
 
 [AMQP] instrumentation in Go
@@ -31,7 +33,7 @@ Here are the example serialization and deserialization of the `opentracing`
 `SapnContext` over the AMQP broker so that we can visualize the tracing
 between the producers and the consumers.
 
-#### Serializing to the wire
+### Serializing to the wire
 
 ```go
     func PublishMessage(
@@ -53,7 +55,7 @@ between the producers and the consumers.
     }
 ```
 
-#### Deserializing from the wire
+### Deserializing from the wire
 
 ```go
     func ConsumeMessage(ctx context.Context, msg *amqp.Delivery) error {
@@ -77,6 +79,5 @@ between the producers and the consumers.
 [terminology]: http://opentracing.io/documentation/pages/spec.html
 [OpenTracing API for Go]: https://github.com/opentracing/opentracing-go
 [AMQP]: https://github.com/streadway/amqp
-[Build Status]: https://travis-ci.org/opentracing-contrib/go-amqp.svg
 [GoDoc]: https://godoc.org/github.com/opentracing-contrib/go-amqp/amqptracer?status.svg
 [check godoc]: https://godoc.org/github.com/opentracing-contrib/go-amqp/amqptracer
