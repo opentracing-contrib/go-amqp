@@ -4,19 +4,18 @@ package amqptracer
 //
 // Example usage for server side:
 //
-//     carrier := amqpHeadersCarrier(amqp.Table)
-//     clientContext, err := tracer.Extract(
-//         opentracing.TextMap,
-//         carrier)
+//	carrier := amqpHeadersCarrier(amqp.Table)
+//	clientContext, err := tracer.Extract(
+//	    opentracing.TextMap,
+//	    carrier)
 //
 // Example usage for client side:
 //
-//     carrier := amqpHeadersCarrier(amqp.Table)
-//     err := tracer.Inject(
-//         span.Context(),
-//         opentracing.TextMap,
-//         carrier)
-//
+//	carrier := amqpHeadersCarrier(amqp.Table)
+//	err := tracer.Inject(
+//	    span.Context(),
+//	    opentracing.TextMap,
+//	    carrier)
 type amqpHeadersCarrier map[string]interface{}
 
 // ForeachKey conforms to the TextMapReader interface.

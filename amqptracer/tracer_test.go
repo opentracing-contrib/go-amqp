@@ -13,7 +13,12 @@ func TestInject(t *testing.T) {
 	h["opname"] = "AlsoNotOT"
 	tracer := testTracer{}
 	sp := tracer.StartSpan("someSpan")
-	fakeID := sp.Context().(testSpanContext).FakeID
+
+	spanCtx, ok := sp.Context().(testSpanContext)
+	if !ok {
+		t.Fatalf("Expected sp.Context() to be of type testSpanContext")
+	}
+	fakeID := spanCtx.FakeID
 
 	// Inject the tracing context to the AMQP header.
 	if err := Inject(sp, h); err != nil {
@@ -44,7 +49,12 @@ func TestExtract(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if ctx.(testSpanContext).FakeID != 42 {
+
+	testCtx, ok := ctx.(testSpanContext)
+	if !ok {
+		t.Fatalf("Expected ctx to be of type testSpanContext")
+	}
+	if testCtx.FakeID != 42 {
 		t.Errorf("Failed to read testprefix-fakeid correctly")
 	}
 }

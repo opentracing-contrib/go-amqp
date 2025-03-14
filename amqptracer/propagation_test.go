@@ -13,7 +13,12 @@ func TestAMQPHeaderInject(t *testing.T) {
 	h["opname"] = "AlsoNotOT"
 	tracer := testTracer{}
 	span := tracer.StartSpan("someSpan")
-	fakeID := span.Context().(testSpanContext).FakeID
+
+	spanCtx, ok := span.Context().(testSpanContext)
+	if !ok {
+		t.Fatalf("Expected span.Context() to be of type testSpanContext")
+	}
+	fakeID := spanCtx.FakeID
 
 	// Use amqpHeadersCarrier to wrap around `h`.
 	carrier := amqpHeadersCarrier(h)
@@ -45,7 +50,11 @@ func TestAMQPHeaderExtract(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if spanContext.(testSpanContext).FakeID != 42 {
+	testContext, ok := spanContext.(testSpanContext)
+	if !ok {
+		t.Fatalf("Expected spanContext to be of type testSpanContext")
+	}
+	if testContext.FakeID != 42 {
 		t.Errorf("Failed to read testprefix-fakeid correctly")
 	}
 }
