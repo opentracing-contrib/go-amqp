@@ -67,7 +67,7 @@ between the producers and the consumers.
         )
         defer sp.Finish()
 
-	// Update the context with the span for the subsequent reference.
+        // Update the context with the span for the subsequent reference.
         ctx = opentracing.ContextWithSpan(ctx, sp)
 
         // Actual message processing.

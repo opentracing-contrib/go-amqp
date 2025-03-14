@@ -30,10 +30,10 @@ type testSpanContext struct {
 func (n testSpanContext) ForeachBaggageItem(handler func(k, v string) bool) {}
 
 type testSpan struct {
-	spanContext   testSpanContext
-	OperationName string
 	StartTime     time.Time
 	Tags          map[string]interface{}
+	OperationName string
+	spanContext   testSpanContext
 }
 
 func (n testSpan) Equal(os opentracing.Span) bool {
@@ -63,7 +63,6 @@ func (n testSpan) Equal(os opentracing.Span) bool {
 	return true
 }
 
-// testSpan:
 func (n testSpan) Context() opentracing.SpanContext                       { return n.spanContext }
 func (n testSpan) SetTag(key string, value interface{}) opentracing.Span  { return n }
 func (n testSpan) Finish()                                                {}
@@ -90,7 +89,9 @@ func (n testTracer) StartSpan(operationName string, opts ...opentracing.StartSpa
 func (n testTracer) startSpanWithOptions(name string, opts opentracing.StartSpanOptions) opentracing.Span {
 	fakeID := nextFakeID()
 	if len(opts.References) > 0 {
-		fakeID = opts.References[0].ReferencedContext.(testSpanContext).FakeID
+		if ctx, ok := opts.References[0].ReferencedContext.(testSpanContext); ok {
+			fakeID = ctx.FakeID
+		}
 	}
 
 	return testSpan{
@@ -106,10 +107,18 @@ func (n testTracer) startSpanWithOptions(name string, opts opentracing.StartSpan
 
 // Inject belongs to the Tracer interface.
 func (n testTracer) Inject(sp opentracing.SpanContext, format interface{}, carrier interface{}) error {
-	spanContext := sp.(testSpanContext)
+	spanContext, ok := sp.(testSpanContext)
+	if !ok {
+		return opentracing.ErrInvalidSpanContext
+	}
+
 	switch format {
 	case opentracing.HTTPHeaders, opentracing.TextMap:
-		carrier.(opentracing.TextMapWriter).Set(testHTTPHeaderPrefix+"fakeid", strconv.Itoa(spanContext.FakeID))
+		writer, ok := carrier.(opentracing.TextMapWriter)
+		if !ok {
+			return opentracing.ErrInvalidCarrier
+		}
+		writer.Set(testHTTPHeaderPrefix+"fakeid", strconv.Itoa(spanContext.FakeID))
 		return nil
 	}
 	return opentracing.ErrUnsupportedFormat
@@ -117,14 +126,18 @@ func (n testTracer) Inject(sp opentracing.SpanContext, format interface{}, carri
 
 // Extract belongs to the Tracer interface.
 func (n testTracer) Extract(format interface{}, carrier interface{}) (opentracing.SpanContext, error) {
-	switch format {
-	case opentracing.HTTPHeaders, opentracing.TextMap:
+	if format == opentracing.HTTPHeaders || format == opentracing.TextMap {
 		// Just for testing purposes... generally not a worthwhile thing to
 		// propagate.
 		sm := testSpanContext{}
-		err := carrier.(opentracing.TextMapReader).ForeachKey(func(key, val string) error {
-			switch strings.ToLower(key) {
-			case testHTTPHeaderPrefix + "fakeid":
+		reader, ok := carrier.(opentracing.TextMapReader)
+		if !ok {
+			return nil, opentracing.ErrInvalidCarrier
+		}
+
+		err := reader.ForeachKey(func(key, val string) error {
+			lowerKey := strings.ToLower(key)
+			if lowerKey == testHTTPHeaderPrefix+"fakeid" {
 				i, err := strconv.Atoi(val)
 				if err != nil {
 					return err
